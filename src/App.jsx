@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
-import Logo from "./assets/logo.png";
+import Logo from "./assets/LOGO.png";
 
 export default function App() {
   const [seccionActiva, setSeccionActiva] = useState("nosotros");
