@@ -38,6 +38,7 @@ export default function App() {
     "Oftalmólogo",
     "Ginecólogo",
   ];
+
   const secciones = ["nosotros", "mision", "vision", "valores"];
 
   const iconosSecciones = {
@@ -134,19 +135,31 @@ export default function App() {
   return (
     <div className="contenedor">
       <header className="navbar">
-        <div className="logo">
-          <img src={Logo} alt="Clinic Center" />
+        {/* Logo o botón de volver según estado */}
+        <div className="logo-container">
+          {!medicoSeleccionado ? (
+            <div className="logo">
+              <img src={Logo} alt="Clinic Center" />
+            </div>
+          ) : (
+            <button className="btn-volver-header" onClick={() => setMedicoSeleccionado(null)}>
+              <FaArrowLeft /> Volver
+            </button>
+          )}
         </div>
 
-        <div
-          className="toggle-al-logo"
-          onClick={() => {
-            setMenuAbierto(!menuAbierto);
-            if (notificacion) setNotificacion(null);
-          }}
-        >
-          {menuAbierto ? <FaTimes /> : <FaBars />}
-        </div>
+        {/* Toggle del menú solo si no estamos en perfil */}
+        {!medicoSeleccionado && (
+          <div
+            className="toggle-al-logo"
+            onClick={() => {
+              setMenuAbierto(!menuAbierto);
+              if (notificacion) setNotificacion(null);
+            }}
+          >
+            {menuAbierto ? <FaTimes /> : <FaBars />}
+          </div>
+        )}
 
         <nav className="menu-desktop">
           {secciones.map((sec) => (
@@ -173,40 +186,37 @@ export default function App() {
           ))}
         </nav>
       </header>
-      {!medicoSeleccionado && (
-        <>
-          <motion.section
-            className="hero"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <h1>Bienvenido a Clinic Center</h1>
-            <p>Donde la atención profesional se combina con el cuidado humano.</p>
-          </motion.section>
 
-          <AnimatePresence>
-            {notificacion && (
-              <motion.div
-                className="snackbar"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 40 }}
-                transition={{ duration: 0.4 }}
-                style={{ zIndex: 2000 }}
-              >
-                <div className="snackbar-header">
-                  <h3>{notificacion.titulo}</h3>
-                  <button className="snackbar-close" onClick={() => setNotificacion(null)}>
-                    ✕
-                  </button>
-                </div>
-                <p>{notificacion.texto}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
+      {!medicoSeleccionado && (
+        <motion.section
+          className="hero"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <h1>Bienvenido a Clinic Center</h1>
+          <p>Donde la atención profesional se combina con el cuidado humano.</p>
+        </motion.section>
       )}
+
+      <AnimatePresence>
+        {notificacion && (
+          <motion.div
+            className="snackbar"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.4 }}
+            style={{ zIndex: 2000 }}
+          >
+            <div className="snackbar-header">
+              <h3>{notificacion.titulo}</h3>
+              <button className="snackbar-close" onClick={() => setNotificacion(null)}>✕</button>
+            </div>
+            <p>{notificacion.texto}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main className="contenido">
         <section className="medicos">
@@ -226,9 +236,6 @@ export default function App() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <button className="btn-volver" onClick={() => setMedicoSeleccionado(null)}>
-                    <FaArrowLeft /> Volver
-                  </button>
                   <div className="card-perfil">
                     <div className="avatar-grande">
                       <img src={medicoSeleccionado.imagen} alt={medicoSeleccionado.nombre} />
@@ -236,19 +243,11 @@ export default function App() {
                     <h2>{medicoSeleccionado.nombre}</h2>
                     <p className="especialidad">{medicoSeleccionado.especialidad}</p>
                     <p className="descripcion">{medicoSeleccionado.descripcion}</p>
-                    <p>
-                      <strong>Experiencia:</strong> {medicoSeleccionado.experiencia}
-                    </p>
-                    <p>
-                      <strong>Cédula:</strong> {medicoSeleccionado.cedula}
-                    </p>
-                    <p>
-                      <strong>Teléfono:</strong> {medicoSeleccionado.telefono}
-                    </p>
+                    <p><strong>Experiencia:</strong> {medicoSeleccionado.experiencia}</p>
+                    <p><strong>Cédula:</strong> {medicoSeleccionado.cedula}</p>
+                    <p><strong>Teléfono:</strong> {medicoSeleccionado.telefono}</p>
                     <div className="valoracion">
-                      <p>
-                        <strong>Valoración promedio:</strong>
-                      </p>
+                      <p><strong>Valoración promedio:</strong></p>
                       <div className="estrellas">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <FaStar
@@ -258,10 +257,7 @@ export default function App() {
                         ))}
                         <span>({(medicoSeleccionado.promedio || 0).toFixed(1)})</span>
                       </div>
-
-                      <p>
-                        <strong>Tu valoración:</strong>
-                      </p>
+                      <p><strong>Tu valoración:</strong></p>
                       <div className="estrellas-interactivas">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <FaStar
@@ -276,7 +272,6 @@ export default function App() {
                   </div>
                 </motion.div>
               ) : (
-               
                 <motion.div
                   key="lista"
                   initial={{ opacity: 0, y: 20 }}
@@ -292,9 +287,7 @@ export default function App() {
                       onChange={(e) => setEspecialidadSeleccionada(e.target.value)}
                     >
                       {especialidades.map((esp) => (
-                        <option key={esp} value={esp}>
-                          {esp}
-                        </option>
+                        <option key={esp} value={esp}>{esp}</option>
                       ))}
                     </select>
                   ) : (
@@ -310,7 +303,6 @@ export default function App() {
                       ))}
                     </div>
                   )}
-
                   <div className="grid-medicos">
                     {medicosFiltrados.map((m, i) => (
                       <motion.div
@@ -338,29 +330,19 @@ export default function App() {
           )}
         </section>
       </main>
-<footer className="pie">
-  <div className="footer-seccion">
-    <h4>Clinic Center</h4>
-    <p>Tu salud es nuestra prioridad.</p>
-  </div>
 
+<footer className="pie">
   <div className="footer-seccion">
     <h4>Contacto</h4>
     <p>Email: contacto@cliniccenter.com</p>
     <p>Tel: +52 3310178480</p>
+    <div className="redes-sociales">
+      <a href="#" aria-label="Facebook"><FaFacebookF /></a>
+      <a href="#" aria-label="Instagram"><FaInstagram /></a>
+      <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
+    </div>
+    <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
   </div>
-
-<div className="footer-seccion">
-  <h4>Redes Sociales</h4>
-  <div className="redes-sociales">
-    <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-    <a href="#" aria-label="Instagram"><FaInstagram /></a>
-    <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-  </div>
-</div>
-
-
-  <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
 </footer>
     </div>
   );

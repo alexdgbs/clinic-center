@@ -44,8 +44,8 @@ body {
   height: 40px;
   width: auto;
   display: block;
+  object-fit: contain;
 }
-
 .menu-desktop {
   display: flex;
   gap: 16px;
@@ -431,20 +431,31 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  
   gap: 20px;
 
 }
 
 .pie .footer-seccion {
-  flex: 1 1 200px;
-  min-width: 180px;
+  flex: 1 1 250px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+.pie .redes-sociales {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap; 
+}
+
+
 .pie h4 {
-  font-size: 1rem;
+  font-size: 1.2rem;
   margin-bottom: 12px;
   color: var(--gris-texto);
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
@@ -458,12 +469,6 @@ body {
 
 .pie a:hover {
   color: var(--acento);
-}
-
-.pie .redes-sociales {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
 }
 
 .pie .redes-sociales a {
@@ -492,7 +497,7 @@ body {
   text-align: center;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .pie {
     flex-direction: column;
@@ -599,40 +604,38 @@ select.filtro-especialidades-mobile:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.8);
 }
-/* Contenedor principal de valoraciones */
+
 .valoracion {
   margin-top: 20px;
-  text-align: center; /* centra todos los textos dentro del bloque */
+  text-align: center;
   padding: 10px 0;
-  border-top: 1px solid #e0e0e0; /* línea opcional para separar sección */
+  border-top: 1px solid #e0e0e0; 
 }
 
-/* Contenedor de estrellas (promedio y tu valoración) */
 .estrellas,
 .estrellas-interactivas {
   display: flex;
-  justify-content: center; /* centra horizontalmente */
-  align-items: center;     /* centra verticalmente */
+  justify-content: center; 
+  align-items: center;     
   gap: 5px;
   margin: 5px 0;
   font-size: 1.3rem;
 }
 
-/* Animación al pasar el cursor sobre estrellas interactivas */
 .estrellas-interactivas svg:hover {
   transform: scale(1.2);
   transition: transform 0.2s;
   cursor: pointer;
 }
 
-/* Estilo del número entre paréntesis de promedio */
+
 .estrellas span {
   margin-left: 8px;
   font-size: 1rem;
   color: #555;
 }
 
-/* Responsive: ajustar tamaño en móviles */
+
 @media (max-width: 600px) {
   .estrellas,
   .estrellas-interactivas {
@@ -643,4 +646,37 @@ select.filtro-especialidades-mobile:focus {
   .estrellas span {
     font-size: 0.9rem;
   }
+}
+
+.logo-container {
+  position: relative;
+  width: 150px; 
+  height: 40px;
+}
+
+.btn-volver-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-left: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: var(--azul-oscuro);
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 110;
+  transition: all 0.3s ease;
+}
+
+.btn-volver-header:hover {
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--acento);
 }
