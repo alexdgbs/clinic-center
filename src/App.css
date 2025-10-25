@@ -7,7 +7,6 @@
   --blanco: #ffffff;
 }
 
-/* ===== Reset ===== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -26,7 +25,6 @@ body {
   min-height: 100vh;
 }
 
-/* ===== Navbar ===== */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -48,7 +46,6 @@ body {
   display: block;
 }
 
-/* ===== Desktop menu ===== */
 .menu-desktop {
   display: flex;
   gap: 16px;
@@ -75,8 +72,6 @@ body {
   color: var(--azul-oscuro);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-
-/* ===== Toggle hamburguesa al lado del logo ===== */
 .toggle-al-logo {
   position: absolute;
   right: 16px;
@@ -102,13 +97,9 @@ body {
   background: rgba(255, 255, 255, 1);
   transform: translateY(-50%) scale(1.1);
 }
-
-/* ===== Menú móvil tipo drawer inferior ===== */
-/* Bottom menu estilo iOS (horizontal / cuadrícula) */
-/* ===== Menú móvil estilo iOS (bottom tab bar) ===== */
 .menu-mobile {
   position: fixed;
-  bottom: 20px; /* distancia desde el borde inferior */
+  bottom: 20px; 
   left: 50%;
   transform: translateX(-50%);
   width: 90%;
@@ -128,39 +119,36 @@ body {
   z-index: 999;
 }
 
-/* Activar menú móvil */
 .menu-mobile.activo {
   opacity: 1;
   pointer-events: all;
   transform: translateX(-50%) translateY(0);
 }
 
-/* Botones (solo íconos) */
 .menu-mobile button {
   background: none;
   border: none;
-  font-size: 1.5rem; /* tamaño del icono */
+  font-size: 1.5rem; 
   color: var(--azul-oscuro);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
-  flex-direction: column; /* ícono arriba, texto abajo */
+  flex-direction: column; 
   align-items: center;
 }
 
 .menu-mobile button span {
-  font-size: 0.6rem; /* texto pequeño */
+  font-size: 0.6rem; 
   margin-top: 2px;
   color: var(--gris-texto);
   white-space: nowrap;
 }
 
 .menu-mobile button.activo span {
-  color: var(--acento); /* resalta el texto activo */
+  color: var(--acento); 
   font-weight: 600;
 }
 
-/* Overlay para oscurecer fondo al abrir */
 .menu-overlay {
   position: fixed;
   top: 0;
@@ -179,20 +167,16 @@ body {
   pointer-events: all;
 }
 
-/* Solo visible en móvil */
 @media (min-width: 1025px) {
   .menu-mobile {
     display: none;
   }
 }
-
-/* ===== Hero ===== */
 .hero {
   text-align: center;
   padding: 100px 16px 80px;
   background: var(--gris-claro);
   margin: 16px;
-  border-bottom: 5px solid #b3b3b3;
 }
 .hero h1 {
   font-size: 2.5rem;
@@ -205,13 +189,11 @@ body {
   color: var(--gris-texto);
 }
 
-/* ===== Contenido ===== */
 .contenido {
   flex: 1;
   padding: 16px;
 }
 
-/* ===== Médicos ===== */
 .medicos {
   text-align: center;
   padding: 60px 16px;
@@ -222,7 +204,6 @@ body {
   margin-bottom: 40px;
 }
 
-/* ===== Filtro especialidades ===== */
 .filtro-especialidades {
   display: flex;
   flex-wrap: wrap;
@@ -248,7 +229,6 @@ body {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== Tarjetas de médicos ===== */
 .grid-medicos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -305,7 +285,6 @@ body {
   color: var(--acento);
 }
 
-/* ===== Perfil médico individual ===== */
 .perfil-medico {
   display: flex;
   flex-direction: column;
@@ -313,7 +292,7 @@ body {
   text-align: center;
 }
 .btn-volver {
-  background: rgba(255, 255, 255, 0.25); /* translúcido */
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--azul-oscuro);
@@ -385,19 +364,17 @@ body {
 .card-perfil .social-medico a:hover {
   color: var(--acento);
 }
-
-/* ===== Snackbar / Notificación ===== */
 .snackbar {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background: rgba(255, 255, 255, 0.3); /* más transparente */
-  backdrop-filter: blur(20px); /* más blur para efecto cristal */
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px); 
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
   padding: 20px 24px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* sombra más suave */
-  border: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil para cristal */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); 
+  border: 1px solid rgba(255, 255, 255, 0.2); 
   z-index: 9999;
   max-width: 350px;
   animation: aparecer 0.3s ease;
@@ -405,12 +382,12 @@ body {
 }
 .snackbar-header {
   display: flex;
-  justify-content: space-between; /* título a la izquierda, X a la derecha */
-  align-items: center; /* centra verticalmente */
+  justify-content: space-between;
+  align-items: center; 
   margin-bottom: 10px;
 }
 .snackbar-header h3 {
-  margin: 0; /* quita márgenes extra */
+  margin: 0; 
   font-size: 1.2rem;
   color: var(--azul-oscuro);
 }
@@ -445,21 +422,91 @@ body {
     transform: translateY(0);
   }
 }
-
-/* ===== Footer ===== */
 .pie {
-  text-align: center;
-  padding: 25px 16px;
-  background: var(--azul-suave);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.25); 
   color: var(--azul-oscuro);
+  padding: 40px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+
 }
+
+.pie .footer-seccion {
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.pie h4 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pie p,
+.pie a {
+  font-size: 0.95rem;
+  color: var(--azul-oscuro);
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.pie a:hover {
+  color: var(--acento);
+}
+
+.pie .redes-sociales {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.pie .redes-sociales a {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--acento);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.pie .redes-sociales a:hover {
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+}
+
 .pie small {
   display: block;
-  margin-top: 5px;
-  color: #537ca5;
+  margin-top: 20px;
+  color: var(--azul-oscuro);
+  width: 100%;
+  text-align: center;
 }
 
-/* ===== Responsive ===== */
+/* Responsive */
+@media (max-width: 768px) {
+  .pie {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 16px;
+  }
+  .pie .footer-seccion {
+    margin-bottom: 20px;
+  }
+  .pie .redes-sociales {
+    justify-content: center;
+  }
+}
+
 @media (max-width: 1024px) {
   .menu-desktop {
     display: none;
@@ -489,14 +536,11 @@ body {
     border-radius: 16px;
   }
 }
-
-/* Solo visible en móvil */
 @media (min-width: 1025px) {
   .toggle-al-logo {
     display: none;
   }
 }
-/* Loading Overlay */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -554,4 +598,49 @@ select.filtro-especialidades-mobile {
 select.filtro-especialidades-mobile:focus {
   outline: none;
   background: rgba(255, 255, 255, 0.8);
+}
+/* Contenedor principal de valoraciones */
+.valoracion {
+  margin-top: 20px;
+  text-align: center; /* centra todos los textos dentro del bloque */
+  padding: 10px 0;
+  border-top: 1px solid #e0e0e0; /* línea opcional para separar sección */
+}
+
+/* Contenedor de estrellas (promedio y tu valoración) */
+.estrellas,
+.estrellas-interactivas {
+  display: flex;
+  justify-content: center; /* centra horizontalmente */
+  align-items: center;     /* centra verticalmente */
+  gap: 5px;
+  margin: 5px 0;
+  font-size: 1.3rem;
+}
+
+/* Animación al pasar el cursor sobre estrellas interactivas */
+.estrellas-interactivas svg:hover {
+  transform: scale(1.2);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+/* Estilo del número entre paréntesis de promedio */
+.estrellas span {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Responsive: ajustar tamaño en móviles */
+@media (max-width: 600px) {
+  .estrellas,
+  .estrellas-interactivas {
+    font-size: 1.1rem;
+    gap: 3px;
+  }
+
+  .estrellas span {
+    font-size: 0.9rem;
+  }
 }

@@ -1,4 +1,4 @@
-// App.js
+// App.jsx
 import { useState, useEffect } from "react";
 import {
   FaEye,
@@ -8,6 +8,9 @@ import {
   FaUsers,
   FaBullseye,
   FaStar,
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
@@ -22,8 +25,19 @@ export default function App() {
   const [notificacion, setNotificacion] = useState(null);
   const [medicos, setMedicos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [miValoracion, setMiValoracion] = useState(0);
 
-  const especialidades = ["Todos", "Cardiólogo", "Gastroenterólogo", "Pediatra", "Dermatólogo", "Oftalmólogo", "Ginecólogo"];
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const especialidades = [
+    "Todos",
+    "Cardiólogo",
+    "Gastroenterólogo",
+    "Pediatra",
+    "Dermatólogo",
+    "Oftalmólogo",
+    "Ginecólogo",
+  ];
   const secciones = ["nosotros", "mision", "vision", "valores"];
 
   const iconosSecciones = {
@@ -67,7 +81,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL;
     fetch(`${API_URL}/medicos`)
       .then((res) => res.json())
       .then((data) => {
@@ -80,9 +93,43 @@ export default function App() {
       });
   }, []);
 
+  useEffect(() => {
+    if (medicoSeleccionado) {
+      const guardada = localStorage.getItem(`valoracion-${medicoSeleccionado._id}`);
+      setMiValoracion(guardada ? Number(guardada) : 0);
+    }
+  }, [medicoSeleccionado]);
+
   const medicosFiltrados = medicos.filter(
     (m) => especialidadSeleccionada === "Todos" || m.especialidad === especialidadSeleccionada
   );
+
+  const generarUserId = () => {
+    const id = "user-" + Math.random().toString(36).substring(2, 9);
+    localStorage.setItem("userId", id);
+    return id;
+  };
+
+  const valorarMedico = async (estrellas) => {
+    setMiValoracion(estrellas);
+    const userId = localStorage.getItem("userId") || generarUserId();
+
+    try {
+      await fetch(`${API_URL}/medicos/${medicoSeleccionado._id}/valorar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, estrellas }),
+      });
+
+      const resMedicos = await fetch(`${API_URL}/medicos`);
+      const medicosActualizados = await resMedicos.json();
+      setMedicos(medicosActualizados);
+
+      localStorage.setItem(`valoracion-${medicoSeleccionado._id}`, estrellas);
+    } catch (err) {
+      console.error("Error al valorar médico:", err);
+    }
+  };
 
   return (
     <div className="contenedor">
@@ -126,33 +173,41 @@ export default function App() {
           ))}
         </nav>
       </header>
-      <motion.section
-        className="hero"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <h1>Bienvenido a Clinic Center</h1>
-        <p>Donde la atención profesional se combina con el cuidado humano.</p>
-      </motion.section>
-      <AnimatePresence>
-        {notificacion && (
-          <motion.div
-            className="snackbar"
-            initial={{ opacity: 0, y: 40 }}
+      {!medicoSeleccionado && (
+        <>
+          <motion.section
+            className="hero"
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.4 }}
-            style={{ zIndex: 2000 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <div className="snackbar-header">
-              <h3>{notificacion.titulo}</h3>
-              <button className="snackbar-close" onClick={() => setNotificacion(null)}>✕</button>
-            </div>
-            <p>{notificacion.texto}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <h1>Bienvenido a Clinic Center</h1>
+            <p>Donde la atención profesional se combina con el cuidado humano.</p>
+          </motion.section>
+
+          <AnimatePresence>
+            {notificacion && (
+              <motion.div
+                className="snackbar"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 40 }}
+                transition={{ duration: 0.4 }}
+                style={{ zIndex: 2000 }}
+              >
+                <div className="snackbar-header">
+                  <h3>{notificacion.titulo}</h3>
+                  <button className="snackbar-close" onClick={() => setNotificacion(null)}>
+                    ✕
+                  </button>
+                </div>
+                <p>{notificacion.texto}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+
       <main className="contenido">
         <section className="medicos">
           {loading ? (
@@ -181,12 +236,47 @@ export default function App() {
                     <h2>{medicoSeleccionado.nombre}</h2>
                     <p className="especialidad">{medicoSeleccionado.especialidad}</p>
                     <p className="descripcion">{medicoSeleccionado.descripcion}</p>
-                    <p><strong>Experiencia:</strong> {medicoSeleccionado.experiencia}</p>
-                    <p><strong>Cedula:</strong> {medicoSeleccionado.cedula}</p>
-                    <p><strong>Teléfono:</strong> {medicoSeleccionado.telefono}</p>
+                    <p>
+                      <strong>Experiencia:</strong> {medicoSeleccionado.experiencia}
+                    </p>
+                    <p>
+                      <strong>Cédula:</strong> {medicoSeleccionado.cedula}
+                    </p>
+                    <p>
+                      <strong>Teléfono:</strong> {medicoSeleccionado.telefono}
+                    </p>
+                    <div className="valoracion">
+                      <p>
+                        <strong>Valoración promedio:</strong>
+                      </p>
+                      <div className="estrellas">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <FaStar
+                            key={n}
+                            color={n <= (medicoSeleccionado.promedio || 0) ? "#ffc107" : "#ccc"}
+                          />
+                        ))}
+                        <span>({(medicoSeleccionado.promedio || 0).toFixed(1)})</span>
+                      </div>
+
+                      <p>
+                        <strong>Tu valoración:</strong>
+                      </p>
+                      <div className="estrellas-interactivas">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <FaStar
+                            key={n}
+                            color={n <= miValoracion ? "#ffc107" : "#ccc"}
+                            onClick={() => valorarMedico(n)}
+                            style={{ cursor: "pointer" }}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ) : (
+               
                 <motion.div
                   key="lista"
                   initial={{ opacity: 0, y: 20 }}
@@ -202,7 +292,9 @@ export default function App() {
                       onChange={(e) => setEspecialidadSeleccionada(e.target.value)}
                     >
                       {especialidades.map((esp) => (
-                        <option key={esp} value={esp}>{esp}</option>
+                        <option key={esp} value={esp}>
+                          {esp}
+                        </option>
                       ))}
                     </select>
                   ) : (
@@ -246,10 +338,30 @@ export default function App() {
           )}
         </section>
       </main>
-      <footer className="pie">
-        <p>contacto@cliniccenter.com</p>
-        <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
-      </footer>
+<footer className="pie">
+  <div className="footer-seccion">
+    <h4>Clinic Center</h4>
+    <p>Tu salud es nuestra prioridad.</p>
+  </div>
+
+  <div className="footer-seccion">
+    <h4>Contacto</h4>
+    <p>Email: contacto@cliniccenter.com</p>
+    <p>Tel: +52 3310178480</p>
+  </div>
+
+<div className="footer-seccion">
+  <h4>Redes Sociales</h4>
+  <div className="redes-sociales">
+    <a href="#" aria-label="Facebook"><FaFacebookF /></a>
+    <a href="#" aria-label="Instagram"><FaInstagram /></a>
+    <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
+  </div>
+</div>
+
+
+  <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
+</footer>
     </div>
   );
 }
