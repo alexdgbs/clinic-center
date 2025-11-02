@@ -1,4 +1,3 @@
-// App.jsx
 import { useState, useEffect } from "react";
 import {
   FaEye,
@@ -10,7 +9,7 @@ import {
   FaStar,
   FaFacebookF,
   FaInstagram,
-  FaLinkedinIn
+  FaLinkedinIn,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
@@ -26,6 +25,8 @@ export default function App() {
   const [medicos, setMedicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [miValoracion, setMiValoracion] = useState(0);
+  const [nuevoComentario, setNuevoComentario] = useState("");
+  const [nombreComentario, setNombreComentario] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -51,19 +52,19 @@ export default function App() {
   const infoSecciones = {
     nosotros: {
       titulo: "¿Quiénes somos?",
-      texto: "Somos un centro médico enfocado en el cuidado integral de la salud, ofreciendo atención profesional y calidez humana.",
+      texto: "Conectamos pacientes con médicos certificados, ofreciendo información clara y confiable.",
     },
     mision: {
       titulo: "Misión",
-      texto: "Proporcionar servicios médicos de alta calidad, con un equipo comprometido con la salud y bienestar de cada paciente.",
+      texto: "Brindar acceso fácil a atención médica profesional y de calidad.",
     },
     vision: {
       titulo: "Visión",
-      texto: "Ser una clínica referente en innovación, confianza y atención humana, contribuyendo al bienestar de la comunidad.",
+      texto: "Ser la plataforma médica más confiable y accesible del país.",
     },
     valores: {
       titulo: "Valores",
-      texto: "Empatía · Compromiso · Honestidad · Respeto · Profesionalismo",
+      texto: "Confianza · Ética · Empatía · Transparencia · Innovación",
     },
   };
 
@@ -105,6 +106,10 @@ export default function App() {
     (m) => especialidadSeleccionada === "Todos" || m.especialidad === especialidadSeleccionada
   );
 
+  const medicosDestacados = [...medicos]
+    .sort((a, b) => (b.promedio || 0) - (a.promedio || 0))
+    .slice(0, 3);
+
   const generarUserId = () => {
     const id = "user-" + Math.random().toString(36).substring(2, 9);
     localStorage.setItem("userId", id);
@@ -132,10 +137,45 @@ export default function App() {
     }
   };
 
+  const colorAvatar = (nombre) => {
+    const colors = ["#f87171", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa", "#f472b6", "#fcd34d"];
+    let hash = 0;
+    for (let i = 0; i < nombre.length; i++) {
+      hash = nombre.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
+  const enviarComentario = async () => {
+    if (!nuevoComentario.trim() || !nombreComentario.trim()) return;
+
+    const userId = localStorage.getItem("userId") || generarUserId();
+
+    try {
+      await fetch(`${API_URL}/medicos/${medicoSeleccionado._id}/comentar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, nombre: nombreComentario, texto: nuevoComentario }),
+      });
+
+      const resMedicos = await fetch(`${API_URL}/medicos`);
+      const medicosActualizados = await resMedicos.json();
+      setMedicos(medicosActualizados);
+
+      setNuevoComentario("");
+      setNombreComentario("");
+    } catch (err) {
+      console.error("Error al enviar comentario:", err);
+    }
+  };
+
+  const medicoActualizado = medicoSeleccionado
+    ? medicos.find((m) => m._id === medicoSeleccionado._id)
+    : null;
+
   return (
     <div className="contenedor">
       <header className="navbar">
-        {/* Logo o botón de volver según estado */}
         <div className="logo-container">
           {!medicoSeleccionado ? (
             <div className="logo">
@@ -148,7 +188,6 @@ export default function App() {
           )}
         </div>
 
-        {/* Toggle del menú solo si no estamos en perfil */}
         {!medicoSeleccionado && (
           <div
             className="toggle-al-logo"
@@ -160,7 +199,6 @@ export default function App() {
             {menuAbierto ? <FaTimes /> : <FaBars />}
           </div>
         )}
-
         <nav className="menu-desktop">
           {secciones.map((sec) => (
             <button
@@ -211,7 +249,9 @@ export default function App() {
           >
             <div className="snackbar-header">
               <h3>{notificacion.titulo}</h3>
-              <button className="snackbar-close" onClick={() => setNotificacion(null)}>✕</button>
+              <button className="snackbar-close" onClick={() => setNotificacion(null)}>
+                ✕
+              </button>
             </div>
             <p>{notificacion.texto}</p>
           </motion.div>
@@ -243,21 +283,31 @@ export default function App() {
                     <h2>{medicoSeleccionado.nombre}</h2>
                     <p className="especialidad">{medicoSeleccionado.especialidad}</p>
                     <p className="descripcion">{medicoSeleccionado.descripcion}</p>
-                    <p><strong>Experiencia:</strong> {medicoSeleccionado.experiencia}</p>
-                    <p><strong>Cédula:</strong> {medicoSeleccionado.cedula}</p>
-                    <p><strong>Teléfono:</strong> {medicoSeleccionado.telefono}</p>
+                    <p>
+                      <strong>Experiencia:</strong> {medicoSeleccionado.experiencia}
+                    </p>
+                    <p>
+                      <strong>Cédula:</strong> {medicoSeleccionado.cedula}
+                    </p>
+                    <p>
+                      <strong>Teléfono:</strong> {medicoSeleccionado.telefono}
+                    </p>
                     <div className="valoracion">
-                      <p><strong>Valoración promedio:</strong></p>
+                      <p>
+                        <strong>Valoración promedio:</strong>
+                      </p>
                       <div className="estrellas">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <FaStar
                             key={n}
-                            color={n <= (medicoSeleccionado.promedio || 0) ? "#ffc107" : "#ccc"}
+                            color={n <= (medicoActualizado?.promedio || 0) ? "#ffc107" : "#ccc"}
                           />
                         ))}
-                        <span>({(medicoSeleccionado.promedio || 0).toFixed(1)})</span>
+                        <span>({(medicoActualizado?.promedio || 0).toFixed(1)})</span>
                       </div>
-                      <p><strong>Tu valoración:</strong></p>
+                      <p>
+                        <strong>Tu valoración:</strong>
+                      </p>
                       <div className="estrellas-interactivas">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <FaStar
@@ -269,81 +319,161 @@ export default function App() {
                         ))}
                       </div>
                     </div>
+                    <div className="comentarios">
+                      <h3>Comentarios</h3>
+                      <ul>
+                        {[...(medicoActualizado?.comentarios || [])]
+                          .reverse()
+                          .map((c, i) => (
+                            <li key={i} className="comentario">
+                              <div
+                                className="avatar-user"
+                                style={{ backgroundColor: colorAvatar(c.nombre) }}
+                              >
+                                {c.nombre.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="contenido-comentario">
+                                <strong>{c.nombre}</strong>
+                                <p>{c.texto}</p>
+                              </div>
+                            </li>
+                          ))}
+                      </ul>
+                      <div className="agregar-comentario">
+                        <input
+                          type="text"
+                          placeholder="Tu nombre"
+                          value={nombreComentario}
+                          onChange={(e) => setNombreComentario(e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Escribe un comentario..."
+                          value={nuevoComentario}
+                          onChange={(e) => setNuevoComentario(e.target.value)}
+                        />
+                        <button onClick={enviarComentario}>Enviar</button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ) : (
-                <motion.div
-                  key="lista"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <h2>Nuestros Médicos</h2>
-                  {isMobile ? (
-                    <select
-                      className="filtro-especialidades-mobile"
-                      value={especialidadSeleccionada}
-                      onChange={(e) => setEspecialidadSeleccionada(e.target.value)}
-                    >
-                      {especialidades.map((esp) => (
-                        <option key={esp} value={esp}>{esp}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="filtro-especialidades">
-                      {especialidades.map((esp) => (
-                        <button
-                          key={esp}
-                          className={esp === especialidadSeleccionada ? "activo" : ""}
-                          onClick={() => setEspecialidadSeleccionada(esp)}
+                <>
+                  {medicosDestacados.length > 0 && (
+                    <section className="medicos-destacados">
+                      <h2>Destacados</h2>
+                      <div className="grid-medicos">
+                        {medicosDestacados.map((m, i) => (
+                          <motion.div
+                            key={m._id}
+                            className="card-medico"
+                            onClick={() => setMedicoSeleccionado(m)}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: i * 0.05 }}
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <div className="avatar">
+                              <img src={m.imagen} alt={m.nombre} />
+                            </div>
+                            <h3>{m.nombre}</h3>
+                            <p className="especialidad">{m.especialidad}</p>
+                            <div className="estrellas">
+                              {[1, 2, 3, 4, 5].map((n) => (
+                                <FaStar
+                                  key={n}
+                                  color={n <= (m.promedio || 0) ? "#ffc107" : "#ccc"}
+                                />
+                              ))}
+                              <span>({(m.promedio || 0).toFixed(1)})</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                  <motion.div
+                    key="lista"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <h2>Nuestros Médicos</h2>
+                    {isMobile ? (
+                      <select
+                        className="filtro-especialidades-mobile"
+                        value={especialidadSeleccionada}
+                        onChange={(e) => setEspecialidadSeleccionada(e.target.value)}
+                      >
+                        {especialidades.map((esp) => (
+                          <option key={esp} value={esp}>
+                            {esp}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="filtro-especialidades">
+                        {especialidades.map((esp) => (
+                          <button
+                            key={esp}
+                            className={esp === especialidadSeleccionada ? "activo" : ""}
+                            onClick={() => setEspecialidadSeleccionada(esp)}
+                          >
+                            {esp}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="grid-medicos">
+                      {medicosFiltrados.map((m, i) => (
+                        <motion.div
+                          key={i}
+                          className="card-medico"
+                          onClick={() => setMedicoSeleccionado(m)}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: i * 0.05 }}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          {esp}
-                        </button>
+                          <div className="avatar">
+                            <img src={m.imagen} alt={m.nombre} />
+                          </div>
+                          <h3>{m.nombre}</h3>
+                          <p className="especialidad">{m.especialidad}</p>
+                          <p className="descripcion">{m.descripcion}</p>
+                        </motion.div>
                       ))}
                     </div>
-                  )}
-                  <div className="grid-medicos">
-                    {medicosFiltrados.map((m, i) => (
-                      <motion.div
-                        key={i}
-                        className="card-medico"
-                        onClick={() => setMedicoSeleccionado(m)}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: i * 0.05 }}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <div className="avatar">
-                          <img src={m.imagen} alt={m.nombre} />
-                        </div>
-                        <h3>{m.nombre}</h3>
-                        <p className="especialidad">{m.especialidad}</p>
-                        <p className="descripcion">{m.descripcion}</p>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </>
               )}
             </AnimatePresence>
           )}
         </section>
       </main>
 
-<footer className="pie">
-  <div className="footer-seccion">
-    <h4>Contacto</h4>
-    <p>Email: contacto@cliniccenter.com</p>
-    <p>Tel: +52 3310178480</p>
-    <div className="redes-sociales">
-      <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-      <a href="#" aria-label="Instagram"><FaInstagram /></a>
-      <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-    </div>
-    <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
-  </div>
-</footer>
+      <footer className="pie">
+        <div className="footer-seccion">
+          <h4>Contacto</h4>
+          <p>Email: alexzav1818@gmail.com</p>
+          <p>Tel: +52 3310178480</p>
+          <div className="redes-sociales">
+            <a href="#" aria-label="Facebook">
+              <FaFacebookF />
+            </a>
+            <a href="#" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <FaLinkedinIn />
+            </a>
+          </div>
+          <small>&copy; 2025 Clinic Center — Todos los derechos reservados</small>
+        </div>
+      </footer>
     </div>
   );
 }
